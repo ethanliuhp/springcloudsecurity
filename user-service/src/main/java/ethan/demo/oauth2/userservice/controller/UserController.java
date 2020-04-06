@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 public class UserController {
 	@GetMapping(value = "get")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Object get(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        authentication.getCredentials();
+        log.info(authentication.toString());
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)authentication.getDetails();
         String token = details.getTokenValue();
         return token;
@@ -27,7 +29,6 @@ public class UserController {
 	@GetMapping(value = "jwt")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public Object getJWT(Authentication authentication){
-		authentication.getCredentials();
 	    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)authentication.getDetails();
 	    String jwtToken = details.getTokenValue();
 	    Claims claims = Jwts.parser()

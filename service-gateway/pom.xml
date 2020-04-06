@@ -5,12 +5,6 @@
     <artifactId>oauth2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>merchant-client</artifactId>
-  <name>merchant-client</name>
-  <dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-oauth2</artifactId>
-		</dependency>
-	</dependencies>
+  <artifactId>service-gateway</artifactId>
+  <name>service-gateway</name>
 </project>

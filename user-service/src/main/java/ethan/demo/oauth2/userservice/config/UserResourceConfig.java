@@ -2,18 +2,16 @@ package ethan.demo.oauth2.userservice.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 @Configuration
 @EnableResourceServer
@@ -28,14 +26,6 @@ public class UserResourceConfig extends ResourceServerConfigurerAdapter {
 //    @Value("${security.oauth2.authorization.check-token-access}")
 //    private String checkTokenEndpointUrl;
 //
-//    @Autowired
-//    private RedisConnectionFactory redisConnectionFactory;
-//
-//    @Bean
-//    public TokenStore redisTokenStore (){
-//        return new RedisTokenStore(redisConnectionFactory);
-//    }
-//
 //    @Bean
 //    public RemoteTokenServices tokenService() {
 //        RemoteTokenServices tokenService = new RemoteTokenServices();
@@ -45,26 +35,31 @@ public class UserResourceConfig extends ResourceServerConfigurerAdapter {
 //        return tokenService;
 //    }
 	
-    @Bean
-    public TokenStore jwtTokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter());
-    }
+    @Override
+	public void configure(HttpSecurity http) throws Exception {
+		// TODO Auto-generated method stub
+    	//http.authorizeRequests().anyRequest().authenticated();
+    	http.authorizeRequests().anyRequest().access("@accesspolicy.check(authentication,request)");
+	}
 
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
-
-        accessTokenConverter.setSigningKey("sk");
-        accessTokenConverter.setVerifierKey("sk");
-        return accessTokenConverter;
-    }
+//    @Autowired
+//    private TokenStore jwtTokenStore;
+    
 
     @Autowired
-    private TokenStore jwtTokenStore;
-
+    private OAuth2WebSecurityExpressionHandler expressionHandler;
+    
+    @Bean
+    public OAuth2WebSecurityExpressionHandler oAuth2WebSecurityExpressionHandler(ApplicationContext applicationContext) {
+        OAuth2WebSecurityExpressionHandler expressionHandler = new OAuth2WebSecurityExpressionHandler();
+        expressionHandler.setApplicationContext(applicationContext);
+        return expressionHandler;
+    }
+	
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
 //        resources.tokenServices(tokenService());
-    	resources.tokenStore(jwtTokenStore);
+//    	resources.tokenStore(jwtTokenStore);
+    	resources.expressionHandler(expressionHandler);
     }
 }

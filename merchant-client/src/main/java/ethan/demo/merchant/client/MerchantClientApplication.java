@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 
-@EnableOAuth2Sso
 @SpringBootApplication
 public class MerchantClientApplication {
 
